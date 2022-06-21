@@ -44,8 +44,8 @@
 
                 // nose of the ship
                 ctx.moveTo( 
-                    ship.x + ship.r * Math.cos(ship.a), 
-                    ship.y - ship.r * Math.sin(ship.a)
+                    ship.x + 4 / 3 * ship.r * Math.cos(ship.a), 
+                    ship.y - 4 / 3 * ship.r * Math.sin(ship.a)
                 );
 
                 // rear left of the ship
@@ -66,11 +66,14 @@
 
                 //draw 
                 ctx.stroke();
+
                 // rotate ship
 
                 // move ship
 
                 // centre dot
+                ctx.fillStyle = "red"
+                ctx.fillRect(ship.x - 1, ship.y - 1 , 2, 2);
             }
 
         </script>
