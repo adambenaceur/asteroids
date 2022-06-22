@@ -16,6 +16,7 @@
         // Asteroids game     
 
         const FPS = 30; // frames per second
+        const FRICTION = 0.7; // friction coefficient of space (0 = no friction , 1 = max friction)
         const SHIP_SIZE = 30; // ship height in pixels
         const TURN_SPEED = 360; // turn speed in degrees per secpond
         const SHIP_THRUST = 5; // acceleration of ship in pixels per seconds
@@ -85,6 +86,9 @@
             if (ship.thrusting) {
                 ship.thrust.x += SHIP_THRUST * Math.cos(ship.a) / FPS;
                 ship.thrust.y -= SHIP_THRUST * Math.sin(ship.a) / FPS;
+            } else {
+                ship.thrust.x -= FRICTION * ship.thrust.x / FPS;
+                ship.thrust.y -= FRICTION * ship.thrust.y / FPS;
             }
 
             // draw ship
