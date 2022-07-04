@@ -228,8 +228,21 @@ function update() {
 
         // move the asteroid
 
+        asteroids[i].x += asteroids[i].xvelocity;
+        asteroids[i].y += asteroids[i].yvelocity;
+
         // handle edge of screen 
 
+        if (asteroids[i].x < 0 - asteroids[i].radius){
+            asteroids[i].x = canv.width + asteroids[i].radius;
+        } else if (asteroids[i].x > canv.width + asteroids[i].radius) {
+            asteroids[i].x = 0 - asteroids[i].radius
+        }
+        if (asteroids[i].y < 0 - asteroids[i].radius){
+            asteroids[i].y = canv.height + asteroids[i].radius;
+        } else if (asteroids[i].y > canv.height + asteroids[i].radius) {
+            asteroids[i].y = 0 - asteroids[i].radius
+        }
     }
 
 
