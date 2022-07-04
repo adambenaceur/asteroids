@@ -12,6 +12,7 @@
 const FPS = 30; // frames per second
 const FRICTION = 0.7; // friction coefficient of space (0 = no friction , 1 = max friction)
 const ASTEROID_NUM = 3; // starting number of asteroids 
+const ASTEROID_JAGGEDNESS = 0.4 // jaggedness of the asteroids (0 = no jaggedness , 1 = max jaggedness)
 const ASTEROID_SIZE = 100; // starting size of asteroids in pixels
 const ASTEROID_SPEED = 50; // max starting speed of asteroids in pixels per seconds 
 const ASTEROID_VERTICES = 10; // average number of vertices on each asteroid
@@ -53,10 +54,17 @@ function createAsteroidBelt() {
     asteroids = [];
     var x, y;
     for (var i = 0; i < ASTEROID_NUM; i++) {
-        x = Math.floor(Math.random() * canv.width);
-        y = Math.floor(Math.random() * canv.height);
+        do {
+            x = Math.floor(Math.random() * canv.width);
+            y = Math.floor(Math.random() * canv.height);
+        } while (distanceBetweenPoints(ship.x, ship.y, x, y) < ASTEROID_SIZE * 2 + ship.r);
         asteroids.push(newAsteroid(x, y));
     }
+
+}
+
+function distanceBetweenPoints(x1, y1, x2, y2) {
+    return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 
 }
 
@@ -98,8 +106,14 @@ function newAsteroid(x, y) {
         yvelocity: Math.random() * ASTEROID_SPEED / FPS * (Math.random() < 0.5 ? 1 : -1),
         radius: ASTEROID_SIZE / 2,
         angle: Math.random() * Math.PI * 2, // in radians
-        vertices: Math.floor(Math.random() * (ASTEROID_VERTICES + 1) + ASTEROID_VERTICES / 2)
+        vertices: Math.floor(Math.random() * (ASTEROID_VERTICES + 1) + ASTEROID_VERTICES / 2),
+        offset: []
     };
+
+    // create the vertex offset array
+    for (var i = 0; i < asteroid.vertices; i++) {
+        asteroid.offset.push(Math.random() * ASTEROID_JAGGEDNESS * 2 + 1 - ASTEROID_JAGGEDNESS)
+    }
     return asteroid;
 }
 
@@ -182,9 +196,9 @@ function update() {
 
     // draw the asteroids
 
-    ctx.strokeStyle = "slategrey";
+    ctx.strokeStyle = "white";
     ctx.lineWidth = SHIP_SIZE / 20;
-    var x, y, radius, angle, vertices;
+    var x, y, radius, angle, vertices, offset;
     for (var i = 0; i < asteroids.length; i++) {
 
         // get asteroid properties
@@ -193,19 +207,20 @@ function update() {
         radius = asteroids[i].radius;
         angle = asteroids[i].angle;
         vertices = asteroids[i].vertices;
+        offset = asteroids[i].offset;
 
         // draw a path
         ctx.beginPath();
         ctx.moveTo(
-            x + radius * Math.cos(angle),
-            y + radius * Math.sin(angle)
+            x + radius * offset[0] * Math.cos(angle),
+            y + radius * offset[0] * Math.sin(angle)
         );
 
         // draw the polygon
-        for (var j = 0; j < vertices; j++) {
+        for (var j = 1; j < vertices; j++) {
             ctx.lineTo(
-                x + radius * Math.cos(angle + j * Math.PI * 2 / vertices),
-                y + radius * Math.sin(angle + j * Math.PI * 2 / vertices)
+                x + radius * offset[j] * Math.cos(angle + j * Math.PI * 2 / vertices),
+                y + radius * offset[j] * Math.sin(angle + j * Math.PI * 2 / vertices)
             );
         }
         ctx.closePath();
