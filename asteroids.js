@@ -9,17 +9,19 @@
 
 
 
-const FPS = 30; // frames per second
-const FRICTION = 0.7; // friction coefficient of space (0 = no friction , 1 = max friction)
-const ASTEROID_NUM = 3; // starting number of asteroids 
+
 const ASTEROID_JAGGEDNESS = 0.4 // jaggedness of the asteroids (0 = no jaggedness , 1 = max jaggedness)
+const ASTEROID_NUM = 3; // starting number of asteroids 
 const ASTEROID_SIZE = 100; // starting size of asteroids in pixels
 const ASTEROID_SPEED = 50; // max starting speed of asteroids in pixels per seconds 
 const ASTEROID_VERTICES = 10; // average number of vertices on each asteroid
-const SHIP_SIZE = 30; // ship height in pixels
-const TURN_SPEED = 360; // turn speed in degrees per secpond
-const SHIP_THRUST = 5; // acceleration of ship in pixels per seconds
+const FPS = 30; // frames per second
+const FRICTION = 0.7; // friction coefficient of space (0 = no friction , 1 = max friction)
+const SHIP_EXPLODE_DURATION = 0.3; // duration of the ship's explosion 
 const SHOW_HITBOX = true; // show or hide collision bounding
+const SHIP_SIZE = 30; // ship height in pixels
+const SHIP_THRUST = 5; // acceleration of ship in pixels per seconds
+const TURN_SPEED = 360; // turn speed in degrees per secpond
 
 /* @type  {HTMLCanvasElement} */
 var canv = document.getElementById("gameCanvas")
@@ -72,6 +74,10 @@ function distanceBetweenPoints(x1, y1, x2, y2) {
 
 
 
+}
+
+function explodeShip() {
+    ship.explodeTime = Math.ceil(SHIP_EXPLODE_DURATION * FPS);
 }
 
 function keyDown(/** @type {KeyboardEvent} */ event) {
