@@ -321,7 +321,7 @@ function update() {
 
     if (!exploding) {
         // if blink number equals 0 then handle collision detection
-        if (ship.blinkNum == 0) {
+        if (ship.blinkNumber == 0) {
             for (var i = 0; i < asteroids.length; i++) {
                 if (distanceBetweenPoints(ship.x, ship.y, asteroids[i].x, asteroids[i].y) < ship.radius + asteroids[i].radius) {
                     explodeShip();
