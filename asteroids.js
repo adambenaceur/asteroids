@@ -17,7 +17,9 @@ const ASTEROID_SPEED = 50; // max starting speed of asteroids in pixels per seco
 const ASTEROID_VERTICES = 10; // average number of vertices on each asteroid
 const FPS = 30; // frames per second
 const FRICTION = 0.7; // friction coefficient of space (0 = no friction , 1 = max friction)
+const SHIP_BLINK_DURATION = 0.1; // // duration of the ship's blinking during invincibility in seconds  
 const SHIP_EXPLODE_DURATION = 0.3; // duration of the ship's explosion 
+const SHIP_INVINCIBILITY_DURATION = 3; // duration of the ship's invincibility in seconds 
 const SHOW_ASTEROID_CENTER = false; // show or hide all asteroids center
 const SHOW_HITBOX = false; // show or hide collision hitbox
 const SHOW_SHIP_CENTER = false // show or hide ship center
@@ -126,6 +128,8 @@ function newShip() {
         y: canv.height / 2,
         radius: SHIP_SIZE / 2, // radius
         a: 90 / 180 * Math.PI, // angle converted to radians
+        blinkNumber: Math.ceil(SHIP_INVINCIBILITY_DURATION / SHIP_BLINK_DURATION),
+        blinkTime: Math.ceil(SHIP_BLINK_DURATION * FPS),
         explodeTime: 0,
         rot: 0,
         thrusting: false,
@@ -137,6 +141,7 @@ function newShip() {
 }
 
 function update() {
+    var blinkOn = ship.blinkNumber % 2 == 0; // even number
     var exploding = ship.explodeTime > 0;
 
     // draw background
@@ -145,6 +150,7 @@ function update() {
 
     // thrust the ship
     if (ship.thrusting && !exploding) {
+
         ship.thrust.x += SHIP_THRUST * Math.cos(ship.a) / FPS;
         ship.thrust.y -= SHIP_THRUST * Math.sin(ship.a) / FPS;
 
@@ -186,34 +192,47 @@ function update() {
 
     // draw ship
     if (!exploding) {
-        ctx.strokeStyle = "white";
-        ctx.lineWidth = SHIP_SIZE / 20;
-        ctx.beginPath();
+        if (blinkOn) {
+            //draw 
+            ctx.strokeStyle = "white";
+            ctx.lineWidth = SHIP_SIZE / 20;
+            ctx.beginPath();
 
-        // nose of the ship
-        ctx.moveTo(
-            ship.x + 4 / 3 * ship.radius * Math.cos(ship.a),
-            ship.y - 4 / 3 * ship.radius * Math.sin(ship.a)
-        );
+            // nose of the ship
+            ctx.moveTo(
+                ship.x + 4 / 3 * ship.radius * Math.cos(ship.a),
+                ship.y - 4 / 3 * ship.radius * Math.sin(ship.a)
+            );
 
-        // rear left of the ship
-        ctx.lineTo(
-            ship.x - ship.radius * (Math.cos(ship.a) + Math.sin(ship.a)),
-            ship.y + ship.radius * (Math.sin(ship.a) - Math.cos(ship.a))
-        );
+            // rear left of the ship
+            ctx.lineTo(
+                ship.x - ship.radius * (Math.cos(ship.a) + Math.sin(ship.a)),
+                ship.y + ship.radius * (Math.sin(ship.a) - Math.cos(ship.a))
+            );
 
-        // rear of the ship
-        ctx.lineTo(
-            ship.x - ship.radius * (Math.cos(ship.a) - Math.sin(ship.a)),
-            ship.y + ship.radius * (Math.sin(ship.a) + Math.cos(ship.a))
-        );
+            // rear of the ship
+            ctx.lineTo(
+                ship.x - ship.radius * (Math.cos(ship.a) - Math.sin(ship.a)),
+                ship.y + ship.radius * (Math.sin(ship.a) + Math.cos(ship.a))
+            );
 
-        // completes triangle 
-        ctx.closePath()
+            // completes triangle 
+            ctx.closePath()
+            ctx.stroke();
+        }
 
+        // handle blinking
+        if (ship.blinkNumber > 0 ) {
+            // reduce the blink time
+            ship.blinkTime--;
 
-        //draw 
-        ctx.stroke();
+            // reduce the blink number
+            if (ship.blinkTime == 0) {
+                ship.blinkTime = Math.ceil(SHIP_BLINK_DURATION * FPS);
+                ship.blinkNumber--;
+            }
+        }
+
     } else {
         // draw the explosion
         ctx.fillStyle = "darkred";
@@ -301,11 +320,15 @@ function update() {
     // check for asteroid collisions
 
     if (!exploding) {
-        for (var i = 0; i < asteroids.length; i++) {
-            if (distanceBetweenPoints(ship.x, ship.y, asteroids[i].x, asteroids[i].y) < ship.radius + asteroids[i].radius) {
-                explodeShip();
+        // if blink number equals 0 then handle collision detection
+        if (ship.blinkNum == 0) {
+            for (var i = 0; i < asteroids.length; i++) {
+                if (distanceBetweenPoints(ship.x, ship.y, asteroids[i].x, asteroids[i].y) < ship.radius + asteroids[i].radius) {
+                    explodeShip();
+                }
             }
         }
+
 
         // rotate ship
         ship.a += ship.rot;
