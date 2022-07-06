@@ -132,6 +132,21 @@ function newAsteroid(x, y) {
     return asteroid;
 }
 
+function shootLaser() {
+    // create laser object
+    if (ship.canShoot && ship.lasers.length < LASER_MAX ) {
+        ship.lasers.push({
+            x: ship.x + 4 / 3 * ship.radius * Math.cos(ship.a),
+            y: ship.y - 4 / 3 * ship.radius * Math.sin(ship.a),
+            xvelocity: LASER_SPEED * Math.cos(ship.a) / FPS,
+            yvelocity: LASER_SPEED * Math.sin(ship.a) / FPS
+        })
+    }
+
+    // prevent further shooting
+    ship.canShoot = false;
+}
+
 function newShip() {
     return {
         x: canv.width / 2,
