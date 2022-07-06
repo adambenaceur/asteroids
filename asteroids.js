@@ -97,7 +97,7 @@ function keyDown(/** @type {KeyboardEvent} */ event) {
 
 function keyUp(/** @type {KeyboardEvent} */ event) {
     switch (event.keyCode) {
-        case 32: // space arrow (allow shooting again)
+        case 32: // space arrow (allow shooting again / therefore stopping shooting in the process)
             ship.canShoot = true
             break;
         case 37: // left arrow ( STOP rotate ship left)
@@ -140,6 +140,7 @@ function newShip() {
         a: 90 / 180 * Math.PI, // angle converted to radians
         blinkNumber: Math.ceil(SHIP_INVINCIBILITY_DURATION / SHIP_BLINK_DURATION),
         blinkTime: Math.ceil(SHIP_BLINK_DURATION * FPS),
+        canShoot: true,
         explodeTime: 0,
         rot: 0,
         thrusting: false,
