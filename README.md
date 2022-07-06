@@ -12,4 +12,4 @@
 
 ## how to play
 USE: `← ↑ →` to move ship [up , left, and right direction key]
-
+USE: `space` to shoot lasers
