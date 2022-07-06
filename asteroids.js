@@ -18,7 +18,9 @@ const ASTEROID_VERTICES = 10; // average number of vertices on each asteroid
 const FPS = 30; // frames per second
 const FRICTION = 0.7; // friction coefficient of space (0 = no friction , 1 = max friction)
 const SHIP_EXPLODE_DURATION = 0.3; // duration of the ship's explosion 
-const SHOW_HITBOX = true; // show or hide collision bounding
+const SHOW_ASTEROID_CENTER = false; // show or hide all asteroids center
+const SHOW_HITBOX = false; // show or hide collision hitbox
+const SHOW_SHIP_CENTER = false // show or hide ship center
 const SHIP_SIZE = 30; // ship height in pixels
 const SHIP_THRUST = 5; // acceleration of ship in pixels per seconds
 const TURN_SPEED = 360; // turn speed in degrees per secpond
@@ -32,6 +34,7 @@ var ship = {
     y: canv.height / 2,
     radius: SHIP_SIZE / 2, // radius
     a: 90 / 180 * Math.PI, // angle converted to radians
+    explodeTime: 0,
     rot: 0,
     thrusting: false,
     thrust: {
@@ -130,6 +133,7 @@ function newAsteroid(x, y) {
 }
 
 function update() {
+    var exploding = ship.explodeTime > 0;
 
     // draw background
     ctx.fillStyle = "black";
@@ -177,34 +181,65 @@ function update() {
     }
 
     // draw ship
-    ctx.strokeStyle = "white";
-    ctx.lineWidth = SHIP_SIZE / 20;
-    ctx.beginPath();
+    if (!exploding) {
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = SHIP_SIZE / 20;
+        ctx.beginPath();
 
-    // nose of the ship
-    ctx.moveTo(
-        ship.x + 4 / 3 * ship.radius * Math.cos(ship.a),
-        ship.y - 4 / 3 * ship.radius * Math.sin(ship.a)
-    );
+        // nose of the ship
+        ctx.moveTo(
+            ship.x + 4 / 3 * ship.radius * Math.cos(ship.a),
+            ship.y - 4 / 3 * ship.radius * Math.sin(ship.a)
+        );
 
-    // rear left of the ship
-    ctx.lineTo(
-        ship.x - ship.radius * (Math.cos(ship.a) + Math.sin(ship.a)),
-        ship.y + ship.radius * (Math.sin(ship.a) - Math.cos(ship.a))
-    );
+        // rear left of the ship
+        ctx.lineTo(
+            ship.x - ship.radius * (Math.cos(ship.a) + Math.sin(ship.a)),
+            ship.y + ship.radius * (Math.sin(ship.a) - Math.cos(ship.a))
+        );
 
-    // rear of the ship
-    ctx.lineTo(
-        ship.x - ship.radius * (Math.cos(ship.a) - Math.sin(ship.a)),
-        ship.y + ship.radius * (Math.sin(ship.a) + Math.cos(ship.a))
-    );
+        // rear of the ship
+        ctx.lineTo(
+            ship.x - ship.radius * (Math.cos(ship.a) - Math.sin(ship.a)),
+            ship.y + ship.radius * (Math.sin(ship.a) + Math.cos(ship.a))
+        );
 
-    // completes triangle 
-    ctx.closePath()
+        // completes triangle 
+        ctx.closePath()
 
 
-    //draw 
-    ctx.stroke();
+        //draw 
+        ctx.stroke();
+    } else {
+        // draw the explosion
+        ctx.fillStyle = "darkred";
+        ctx.beginPath();
+        ctx.arc(ship.x, ship.y, ship.radius * 1.7, 0, Math.PI * 2, false);
+        ctx.fill();
+
+        ctx.fillStyle = "red";
+        ctx.beginPath();
+        ctx.arc(ship.x, ship.y, ship.radius * 1.4, 0, Math.PI * 2, false);
+        ctx.fill();
+
+        ctx.fillStyle = "orange";
+        ctx.beginPath();
+        ctx.arc(ship.x, ship.y, ship.radius * 1.1, 0, Math.PI * 2, false);
+        ctx.fill();
+
+        ctx.fillStyle = "yellow";
+        ctx.beginPath();
+        ctx.arc(ship.x, ship.y, ship.radius * 0.8, 0, Math.PI * 2, false);
+        ctx.fill();
+
+        ctx.fillStyle = "white";
+        ctx.beginPath();
+        ctx.arc(ship.x, ship.y, ship.radius * 0.5, 0, Math.PI * 2, false);
+        ctx.fill();
+
+
+    }
+
 
     if (SHOW_HITBOX) {
         ctx.strokeStyle = "lime";
@@ -229,9 +264,10 @@ function update() {
         vertices = asteroids[i].vertices;
         offset = asteroids[i].offset;
 
-        ctx.fillStyle = "red";
-        ctx.fillRect(asteroids[i].x, asteroids[i].y, 1, 1)
-
+        if (SHOW_ASTEROID_CENTER) {
+            ctx.fillStyle = "red";
+            ctx.fillRect(asteroids[i].x, asteroids[i].y, 1, 1)
+        }
         // draw a path
         ctx.beginPath();
         ctx.moveTo(
@@ -266,9 +302,10 @@ function update() {
     }
 
     // draw shipx, shipy
-    ctx.fillStyle = "red";
-    ctx.fillRect(ship.x, ship.y, 1, 1)
-
+    if (SHOW_SHIP_CENTER) {
+        ctx.fillStyle = "red";
+        ctx.fillRect(ship.x, ship.y, 1, 1)
+    }
 
     // rotate ship
     ship.a += ship.rot;
