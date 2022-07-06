@@ -7,6 +7,9 @@
 ## Instructions
 
 1. Download the repo
-2. load html file
-3. play Atari!
+2. Load html file
+3. Play Atari!
+
+## how to play
+USE: `← ↑ →` to move ship [up , left, and right direction key]
 
