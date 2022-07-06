@@ -77,6 +77,9 @@ function explodeShip() {
 
 function keyDown(/** @type {KeyboardEvent} */ event) {
     switch (event.keyCode) {
+        case 32: // space arrow (shoot laser)
+            shootLaser();
+            break;
         case 37: // left arrow (rotate ship left)
             ship.rot = TURN_SPEED / 180 * Math.PI / FPS;
             break;
@@ -87,6 +90,8 @@ function keyDown(/** @type {KeyboardEvent} */ event) {
         case 39: // right arrow (rotate ship right)
             ship.rot = -TURN_SPEED / 180 * Math.PI / FPS;
             break;
+        
+
     }
 }
 
