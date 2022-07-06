@@ -97,6 +97,9 @@ function keyDown(/** @type {KeyboardEvent} */ event) {
 
 function keyUp(/** @type {KeyboardEvent} */ event) {
     switch (event.keyCode) {
+        case 32: // space arrow (allow shooting again)
+            ship.canShoot = true
+            break;
         case 37: // left arrow ( STOP rotate ship left)
             ship.rot = 0;
             break;
