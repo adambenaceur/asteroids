@@ -342,12 +342,19 @@ function update() {
             ctx.stroke();
         }
 
+        // draw lasers 
+        for (var i = 0; i < ship.lasers.length; i++) {
+            ctx.fillStyle = "white";
+            ctx.beginPath();
+            ctx.arc(ship.lasers[i].x, ship.lasers[i].y, SHIP_SIZE / 15, 0 , Math.PI * 2, false)
+            ctx.fill()
+        }
 
     }
     // check for asteroid collisions
 
     if (!exploding) {
-        // if blink number equals 0 then handle collision detection
+        // if blink number equals 0 then handle collision detection (only check when not blinking)
         if (ship.blinkNumber == 0) {
             for (var i = 0; i < asteroids.length; i++) {
                 if (distanceBetweenPoints(ship.x, ship.y, asteroids[i].x, asteroids[i].y) < ship.radius + asteroids[i].radius) {
