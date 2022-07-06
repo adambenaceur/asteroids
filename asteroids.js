@@ -17,6 +17,8 @@ const ASTEROID_SPEED = 50; // max starting speed of asteroids in pixels per seco
 const ASTEROID_VERTICES = 10; // average number of vertices on each asteroid
 const FPS = 30; // frames per second
 const FRICTION = 0.7; // friction coefficient of space (0 = no friction , 1 = max friction)
+const LASER_MAX = 10; // maximum number of lasers on screen at once
+const LASER_SPEED = 500; // speed of lazers in pixels per seconds
 const SHIP_BLINK_DURATION = 0.1; // // duration of the ship's blinking during invincibility in seconds  
 const SHIP_EXPLODE_DURATION = 0.3; // duration of the ship's explosion 
 const SHIP_INVINCIBILITY_DURATION = 3; // duration of the ship's invincibility in seconds 
