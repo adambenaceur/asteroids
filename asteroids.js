@@ -141,6 +141,7 @@ function newShip() {
         blinkNumber: Math.ceil(SHIP_INVINCIBILITY_DURATION / SHIP_BLINK_DURATION),
         blinkTime: Math.ceil(SHIP_BLINK_DURATION * FPS),
         canShoot: true,
+        lasers: [],
         explodeTime: 0,
         rot: 0,
         thrusting: false,
