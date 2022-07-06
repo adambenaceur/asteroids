@@ -140,7 +140,7 @@ function update() {
     ctx.fillRect(0, 0, canv.width, canv.height)
 
     // thrust the ship
-    if (ship.thrusting) {
+    if (ship.thrusting && !exploding) {
         ship.thrust.x += SHIP_THRUST * Math.cos(ship.a) / FPS;
         ship.thrust.y -= SHIP_THRUST * Math.sin(ship.a) / FPS;
 
@@ -295,11 +295,22 @@ function update() {
 
     }
     // check for asteroid collisions
-    for (var i = 0; i < asteroids.length; i++) {
-        if (distanceBetweenPoints(ship.x, ship.y, asteroids[i].x, asteroids[i].y) < ship.radius + asteroids[i].radius) {
-            explodeShip();
+
+    if (!exploding) { 
+        for (var i = 0; i < asteroids.length; i++) {
+            if (distanceBetweenPoints(ship.x, ship.y, asteroids[i].x, asteroids[i].y) < ship.radius + asteroids[i].radius) {
+                explodeShip();
+            }
         }
+        
+        // rotate ship
+        ship.a += ship.rot;
+
+        // move ship
+        ship.x += ship.thrust.x;
+        ship.y += ship.thrust.y;
     }
+
 
     // draw shipx, shipy
     if (SHOW_SHIP_CENTER) {
@@ -307,12 +318,7 @@ function update() {
         ctx.fillRect(ship.x, ship.y, 1, 1)
     }
 
-    // rotate ship
-    ship.a += ship.rot;
 
-    // move ship
-    ship.x += ship.thrust.x;
-    ship.y += ship.thrust.y;
 
     // handle edge of screen
     if (ship.x < 0 - ship.radius) {
