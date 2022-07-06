@@ -149,7 +149,7 @@ function update() {
     ctx.fillRect(0, 0, canv.width, canv.height)
 
     // thrust the ship
-    if (ship.thrusting && !exploding) {
+    if (ship.thrusting && !exploding && blinkOn) {
 
         ship.thrust.x += SHIP_THRUST * Math.cos(ship.a) / FPS;
         ship.thrust.y -= SHIP_THRUST * Math.sin(ship.a) / FPS;
