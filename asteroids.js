@@ -139,7 +139,7 @@ function shootLaser() {
             x: ship.x + 4 / 3 * ship.radius * Math.cos(ship.a),
             y: ship.y - 4 / 3 * ship.radius * Math.sin(ship.a),
             xvelocity: LASER_SPEED * Math.cos(ship.a) / FPS,
-            yvelocity: LASER_SPEED * Math.sin(ship.a) / FPS
+            yvelocity: -LASER_SPEED * Math.sin(ship.a) / FPS
         });
     }
 
@@ -407,7 +407,7 @@ function update() {
 
     for (var i = 0; i < ship.lasers.length; i++) {
         ship.lasers[i].x += ship.lasers[i].xvelocity
-        ship.lasers[i].x += ship.lasers[i].yvelocity
+        ship.lasers[i].y += ship.lasers[i].yvelocity
     }
     // move the asteroid
     for (var i = 0; i < asteroids.length; i++) {
