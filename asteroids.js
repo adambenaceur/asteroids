@@ -17,6 +17,7 @@ const ASTEROID_SPEED = 50; // max starting speed of asteroids in pixels per seco
 const ASTEROID_VERTICES = 10; // average number of vertices on each asteroid
 const FPS = 30; // frames per second
 const FRICTION = 0.7; // friction coefficient of space (0 = no friction , 1 = max friction)
+const LASER_DISTANCE = 0.6 // max distance laser can travel as fraction of screen width
 const LASER_MAX = 10; // maximum number of lasers on screen at once
 const LASER_SPEED = 500; // speed of lazers in pixels per seconds
 const SHIP_BLINK_DURATION = 0.1; // // duration of the ship's blinking during invincibility in seconds  
@@ -139,7 +140,8 @@ function shootLaser() {
             x: ship.x + 4 / 3 * ship.radius * Math.cos(ship.a),
             y: ship.y - 4 / 3 * ship.radius * Math.sin(ship.a),
             xvelocity: LASER_SPEED * Math.cos(ship.a) / FPS,
-            yvelocity: -LASER_SPEED * Math.sin(ship.a) / FPS
+            yvelocity: -LASER_SPEED * Math.sin(ship.a) / FPS,
+            distance: 0
         });
     }
 
@@ -405,9 +407,22 @@ function update() {
 
     // move the lasers 
 
-    for (var i = 0; i < ship.lasers.length; i++) {
+    for (var i = ship.lasers.length - 1; i >= 0; i--) {
+        // check distance travelled
+        if (ship.laser[i].distance > LASER_DISTANCE * canv.width) {
+            ship.lasers.splice(i, 1);
+            continue;
+        }
+
+
+        // move laser 
         ship.lasers[i].x += ship.lasers[i].xvelocity
         ship.lasers[i].y += ship.lasers[i].yvelocity
+
+        // calculate distance travelled w/ pythagorean theorem
+
+
+        ship.lasers[i].distance += Math.sqrt(Math.pow(ship.lasers[i].xvelocity, 2) + Math.pow(ship.lasers[i].xvelocity, 2))
 
         // handle edge of screen for lasers
         if (ship.lasers[i].x < 0) {
