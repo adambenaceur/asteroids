@@ -90,7 +90,7 @@ function keyDown(/** @type {KeyboardEvent} */ event) {
         case 39: // right arrow (rotate ship right)
             ship.rot = -TURN_SPEED / 180 * Math.PI / FPS;
             break;
-        
+
 
     }
 }
@@ -134,16 +134,16 @@ function newAsteroid(x, y) {
 
 function shootLaser() {
     // create laser object
-    if (ship.canShoot && ship.lasers.length < LASER_MAX ) {
+    if (ship.canShoot && ship.lasers.length < LASER_MAX) {
         ship.lasers.push({
             x: ship.x + 4 / 3 * ship.radius * Math.cos(ship.a),
             y: ship.y - 4 / 3 * ship.radius * Math.sin(ship.a),
             xvelocity: LASER_SPEED * Math.cos(ship.a) / FPS,
             yvelocity: LASER_SPEED * Math.sin(ship.a) / FPS
-        })
+        });
     }
 
-    // prevent further shooting
+// prevent further shooting
     ship.canShoot = false;
 }
 
@@ -174,6 +174,51 @@ function update() {
     // draw background
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canv.width, canv.height)
+
+    // draw the asteroids
+
+    var x, y, radius, angle, vertices, offset;
+    for (var i = 0; i < asteroids.length; i++) {
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = SHIP_SIZE / 20;
+
+        // get asteroid properties
+        x = asteroids[i].x;
+        y = asteroids[i].y;
+        radius = asteroids[i].radius;
+        angle = asteroids[i].angle;
+        vertices = asteroids[i].vertices;
+        offset = asteroids[i].offset;
+
+        if (SHOW_ASTEROID_CENTER) {
+            ctx.fillStyle = "red";
+            ctx.fillRect(asteroids[i].x, asteroids[i].y, 1, 1)
+        }
+        // draw a path
+        ctx.beginPath();
+        ctx.moveTo(
+            x + radius * offset[0] * Math.cos(angle),
+            y + radius * offset[0] * Math.sin(angle)
+        );
+
+        // draw the polygon
+        for (var j = 1; j < vertices; j++) {
+            ctx.lineTo(
+                x + radius * offset[j] * Math.cos(angle + j * Math.PI * 2 / vertices),
+                y + radius * offset[j] * Math.sin(angle + j * Math.PI * 2 / vertices)
+            );
+        }
+        ctx.closePath();
+        ctx.stroke();
+
+    }
+
+    if (SHOW_HITBOX) {
+        ctx.strokeStyle = "lime";
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2, false);
+        ctx.stroke();
+    }
 
     // thrust the ship
     if (ship.thrusting && !exploding && blinkOn) {
@@ -249,7 +294,7 @@ function update() {
         }
 
         // handle blinking
-        if (ship.blinkNumber > 0 ) {
+        if (ship.blinkNumber > 0) {
             // reduce the blink time
             ship.blinkTime--;
 
@@ -299,58 +344,17 @@ function update() {
     }
 
 
-    // draw the asteroids
 
-    var x, y, radius, angle, vertices, offset;
-    for (var i = 0; i < asteroids.length; i++) {
-        ctx.strokeStyle = "white";
-        ctx.lineWidth = SHIP_SIZE / 20;
 
-        // get asteroid properties
-        x = asteroids[i].x;
-        y = asteroids[i].y;
-        radius = asteroids[i].radius;
-        angle = asteroids[i].angle;
-        vertices = asteroids[i].vertices;
-        offset = asteroids[i].offset;
-
-        if (SHOW_ASTEROID_CENTER) {
-            ctx.fillStyle = "red";
-            ctx.fillRect(asteroids[i].x, asteroids[i].y, 1, 1)
-        }
-        // draw a path
+    // draw lasers 
+    for (var i = 0; i < ship.lasers.length; i++) {
+        ctx.fillStyle = "white";
         ctx.beginPath();
-        ctx.moveTo(
-            x + radius * offset[0] * Math.cos(angle),
-            y + radius * offset[0] * Math.sin(angle)
-        );
-
-        // draw the polygon
-        for (var j = 1; j < vertices; j++) {
-            ctx.lineTo(
-                x + radius * offset[j] * Math.cos(angle + j * Math.PI * 2 / vertices),
-                y + radius * offset[j] * Math.sin(angle + j * Math.PI * 2 / vertices)
-            );
-        }
-        ctx.closePath();
-        ctx.stroke();
-
-        if (SHOW_HITBOX) {
-            ctx.strokeStyle = "lime";
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, Math.PI * 2, false);
-            ctx.stroke();
-        }
-
-        // draw lasers 
-        for (var i = 0; i < ship.lasers.length; i++) {
-            ctx.fillStyle = "white";
-            ctx.beginPath();
-            ctx.arc(ship.lasers[i].x, ship.lasers[i].y, SHIP_SIZE / 15, 0 , Math.PI * 2, false)
-            ctx.fill()
-        }
-
+        ctx.arc(ship.lasers[i].x, ship.lasers[i].y, SHIP_SIZE / 15, 0, Math.PI * 2, false)
+        ctx.fill()
     }
+
+
     // check for asteroid collisions
 
     if (!exploding) {
