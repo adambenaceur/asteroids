@@ -371,11 +371,12 @@ function update() {
 
             // grab the laser properties 
             laserx = ship.lasers[j].x;
-            laserxy = ship.lasers[j].y;
+            lasery = ship.lasers[j].y;
 
+ 
             // detect hits 
             if (distanceBetweenPoints(asteroidx, asteroidy, laserx, lasery) < asteroidradius) {
-                
+
                 // remove the laser
                 ship.lasers.splice(j, 1);
 
