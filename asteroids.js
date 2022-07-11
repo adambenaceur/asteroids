@@ -408,6 +408,18 @@ function update() {
     for (var i = 0; i < ship.lasers.length; i++) {
         ship.lasers[i].x += ship.lasers[i].xvelocity
         ship.lasers[i].y += ship.lasers[i].yvelocity
+
+        // handle edge of screen for lasers
+        if (ship.lasers[i].x < 0) {
+            ship.lasers[i].x = canv.width;
+        } else if (ship.lasers[i].x > canv.width) {
+            ship.lasers[i].x = 0;
+        }
+        if (ship.lasers[i].y < 0) {
+            ship.lasers[i].y = canv.height;
+        } else if (ship.lasers[i].y > canv.height) {
+            ship.lasers[i].y = 0;
+        }
     }
     // move the asteroid
     for (var i = 0; i < asteroids.length; i++) {
