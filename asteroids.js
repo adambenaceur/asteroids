@@ -356,6 +356,37 @@ function update() {
         ctx.fill()
     }
 
+    // dectect laser hits asteroid
+
+    var asteroidx, asteroidy, radius, laserx, lasery;
+    for (var i = asteroids.length - 1; i >= 0; i--) {
+
+        // grab the asteroid properties 
+        asteroidx = asteroids[i].x;
+        asteroidy = asteroids[i].y;
+        asteroidradius = asteroids[i].radius;
+
+        // loop over the lasers 
+        for (var j = ship.lasers.length - 1; j >= 0; j--) {
+
+            // grab the laser properties 
+            laserx = ship.lasers[j].x;
+            laserxy = ship.lasers[j].y;
+
+            // detect hits 
+            if (distanceBetweenPoints(asteroidx, asteroidy, laserx, lasery) < asteroidradius) {
+                
+                // remove the laser
+                ship.lasers.splice(j, 1);
+
+                // remove the asteroid
+                asteroids.splice(i, 1);
+
+                break;
+            }
+        }
+    }
+
 
     // check for asteroid collisions
 
@@ -409,7 +440,7 @@ function update() {
 
     for (var i = ship.lasers.length - 1; i >= 0; i--) {
         // check distance travelled
-        if (ship.laser[i].distance > LASER_DISTANCE * canv.width) {
+        if (ship.lasers[i].distance > LASER_DISTANCE * canv.width) {
             ship.lasers.splice(i, 1);
             continue;
         }
