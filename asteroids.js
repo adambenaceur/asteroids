@@ -143,7 +143,7 @@ function shootLaser() {
         });
     }
 
-// prevent further shooting
+    // prevent further shooting
     ship.canShoot = false;
 }
 
@@ -403,6 +403,12 @@ function update() {
         ship.y = 0 - ship.radius
     }
 
+    // move the lasers 
+
+    for (var i = 0; i < ship.lasers.length; i++) {
+        ship.lasers[i].x += ship.lasers[i].xvelocity
+        ship.lasers[i].x += ship.lasers[i].yvelocity
+    }
     // move the asteroid
     for (var i = 0; i < asteroids.length; i++) {
 
