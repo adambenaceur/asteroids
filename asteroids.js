@@ -11,7 +11,7 @@
 
 
 const ASTEROID_JAGGEDNESS = 0.4 // jaggedness of the asteroids (0 = no jaggedness , 1 = max jaggedness)
-const ASTEROID_NUM = 3; // starting number of asteroids 
+const ASTEROID_NUM = 1; // starting number of asteroids 
 const ASTEROID_SIZE = 100; // starting size of asteroids in pixels
 const ASTEROID_SPEED = 50; // max starting speed of asteroids in pixels per seconds 
 const ASTEROID_VERTICES = 10; // average number of vertices on each asteroid
@@ -34,7 +34,10 @@ const TURN_SPEED = 360; // turn speed in degrees per secpond
 var canv = document.getElementById("gameCanvas")
 var ctx = canv.getContext("2d");
 
-var ship = newShip()
+// set up the game parameters
+var level, asteroids, ship;
+newGame();
+
 
 // set up asteroids
 var asteroids = [];
@@ -46,13 +49,15 @@ document.addEventListener("keydown", keyDown);
 document.addEventListener("keyup", keyUp);
 
 
+
+
 // setting up game loop
 setInterval(update, 1000 / FPS)
 
 function createAsteroidBelt() {
     asteroids = [];
     var x, y;
-    for (var i = 0; i < ASTEROID_NUM; i++) {
+    for (var i = 0; i < ASTEROID_NUM + level; i++) {
         do {
             x = Math.floor(Math.random() * canv.width);
             y = Math.floor(Math.random() * canv.height);
@@ -78,15 +83,21 @@ function destroyAsteroid(index) {
 
     // destroy asteroids
     asteroids.splice(index, 1);
+
+    // new level when no more asteroids
+
+    if (asteroids.length == 0 ) {
+        level++;
+        newLevel();
+    }
 }
+
 
 function distanceBetweenPoints(x1, y1, x2, y2) {
     // using pythagorean theorem
 
     // when this = 0 , there is no distance
     return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-
-
 
 }
 
@@ -133,11 +144,12 @@ function keyUp(/** @type {KeyboardEvent} */ event) {
 }
 
 function newAsteroid(x, y, r) {
+    var lvlMultiplyer = 1 + 0.1 * level;
     var asteroid = {
         x: x,
         y: y,
-        xvelocity: Math.random() * ASTEROID_SPEED / FPS * (Math.random() < 0.5 ? 1 : -1),
-        yvelocity: Math.random() * ASTEROID_SPEED / FPS * (Math.random() < 0.5 ? 1 : -1),
+        xvelocity: Math.random() * ASTEROID_SPEED  * lvlMultiplyer / FPS * (Math.random() < 0.5 ? 1 : -1),
+        yvelocity: Math.random() * ASTEROID_SPEED * lvlMultiplyer / FPS * (Math.random() < 0.5 ? 1 : -1),
         radius: r,
         angle: Math.random() * Math.PI * 2, // in radians
         vertices: Math.floor(Math.random() * (ASTEROID_VERTICES + 1) + ASTEROID_VERTICES / 2),
@@ -165,6 +177,17 @@ function shootLaser() {
 
     // prevent further shooting
     ship.canShoot = false;
+}
+
+function newGame() {
+    level = 0;
+    // set up spaceship
+    ship = newShip();
+    newLevel();
+}
+
+function newLevel() {
+    createAsteroidBelt();
 }
 
 function newShip() {
