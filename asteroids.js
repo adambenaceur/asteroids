@@ -57,9 +57,27 @@ function createAsteroidBelt() {
             x = Math.floor(Math.random() * canv.width);
             y = Math.floor(Math.random() * canv.height);
         } while (distanceBetweenPoints(ship.x, ship.y, x, y) < ASTEROID_SIZE * 2 + ship.radius);
-        asteroids.push(newAsteroid(x, y));
+        asteroids.push(newAsteroid(x, y, Math.ceil(ASTEROID_SIZE / 2)));
     }
 
+}
+
+function destroyAsteroid(index) {
+    var x = asteroids[index].x;
+    var y = asteroids[index].y;
+    var r = asteroids[index].radius;
+
+    // split the asteroid in two if necessisary
+    if (r == Math.ceil(ASTEROID_SIZE / 2)) {
+        asteroids.push(newAsteroid(x, y, Math.ceil(ASTEROID_SIZE / 4)));
+        asteroids.push(newAsteroid(x, y, Math.ceil(ASTEROID_SIZE / 4)));
+    } else if (r == Math.ceil(ASTEROID_SIZE / 4)) {
+        asteroids.push(newAsteroid(x, y, Math.ceil(ASTEROID_SIZE / 8)));
+        asteroids.push(newAsteroid(x, y, Math.ceil(ASTEROID_SIZE / 8)));
+    }
+
+    // destroy asteroids
+    asteroids.splice(index, 1);
 }
 
 function distanceBetweenPoints(x1, y1, x2, y2) {
@@ -114,13 +132,13 @@ function keyUp(/** @type {KeyboardEvent} */ event) {
     }
 }
 
-function newAsteroid(x, y) {
+function newAsteroid(x, y, r) {
     var asteroid = {
         x: x,
         y: y,
         xvelocity: Math.random() * ASTEROID_SPEED / FPS * (Math.random() < 0.5 ? 1 : -1),
         yvelocity: Math.random() * ASTEROID_SPEED / FPS * (Math.random() < 0.5 ? 1 : -1),
-        radius: ASTEROID_SIZE / 2,
+        radius: r,
         angle: Math.random() * Math.PI * 2, // in radians
         vertices: Math.floor(Math.random() * (ASTEROID_VERTICES + 1) + ASTEROID_VERTICES / 2),
         offset: []
@@ -373,7 +391,7 @@ function update() {
             laserx = ship.lasers[j].x;
             lasery = ship.lasers[j].y;
 
- 
+
             // detect hits 
             if (distanceBetweenPoints(asteroidx, asteroidy, laserx, lasery) < asteroidradius) {
 
@@ -381,7 +399,7 @@ function update() {
                 ship.lasers.splice(j, 1);
 
                 // remove the asteroid
-                asteroids.splice(i, 1);
+                destroyAsteroid(i);
 
                 break;
             }
@@ -397,6 +415,8 @@ function update() {
             for (var i = 0; i < asteroids.length; i++) {
                 if (distanceBetweenPoints(ship.x, ship.y, asteroids[i].x, asteroids[i].y) < ship.radius + asteroids[i].radius) {
                     explodeShip();
+                    destroyAsteroid(i);
+                    break;
                 }
             }
         }
