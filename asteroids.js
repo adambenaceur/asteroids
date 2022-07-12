@@ -28,14 +28,18 @@ const SHOW_HITBOX = false; // show or hide collision hitbox
 const SHOW_SHIP_CENTER = false // show or hide ship center
 const SHIP_SIZE = 30; // ship height in pixels
 const SHIP_THRUST = 5; // acceleration of ship in pixels per seconds
+const TEXT_FADE_TIME = 2.5; // text fade time in seconds
+const TEXT_SIZE = 40; // text font height in pixels
 const TURN_SPEED = 360; // turn speed in degrees per secpond
+
+
 
 /* @type  {HTMLCanvasElement} */
 var canv = document.getElementById("gameCanvas")
 var ctx = canv.getContext("2d");
 
 // set up the game parameters
-var level, asteroids, ship;
+var level, asteroids, ship, text, textAlpha;
 newGame();
 
 
@@ -86,7 +90,7 @@ function destroyAsteroid(index) {
 
     // new level when no more asteroids
 
-    if (asteroids.length == 0 ) {
+    if (asteroids.length == 0) {
         level++;
         newLevel();
     }
@@ -148,7 +152,7 @@ function newAsteroid(x, y, r) {
     var asteroid = {
         x: x,
         y: y,
-        xvelocity: Math.random() * ASTEROID_SPEED  * lvlMultiplyer / FPS * (Math.random() < 0.5 ? 1 : -1),
+        xvelocity: Math.random() * ASTEROID_SPEED * lvlMultiplyer / FPS * (Math.random() < 0.5 ? 1 : -1),
         yvelocity: Math.random() * ASTEROID_SPEED * lvlMultiplyer / FPS * (Math.random() < 0.5 ? 1 : -1),
         radius: r,
         angle: Math.random() * Math.PI * 2, // in radians
@@ -187,6 +191,8 @@ function newGame() {
 }
 
 function newLevel() {
+    text = "Level " + (level + 1);
+    textAlpha = 1.0;
     createAsteroidBelt();
 }
 
@@ -397,6 +403,13 @@ function update() {
         ctx.fill()
     }
 
+    // draw the game text 
+    if (textAlpha >= 0) {
+        ctx.fillStyle = "rbga(255,255,255, " + textAlpha + ")";
+        ctx.font = "small-caps " + TEXT_SIZE + "px dejavu sans mono";
+        ctx.fillText(text, canv.width / 2, canv.height * 0.75);
+        textAlpha -= (1.0 / TEXT_FADE_TIME / FPS);
+    }
     // dectect laser hits asteroid
 
     var asteroidx, asteroidy, radius, laserx, lasery;
