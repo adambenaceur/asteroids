@@ -405,6 +405,8 @@ function update() {
 
     // draw the game text 
     if (textAlpha >= 0) {
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
         ctx.fillStyle = "rbga(255,255,255, " + textAlpha + ")";
         ctx.font = "small-caps " + TEXT_SIZE + "px dejavu sans mono";
         ctx.fillText(text, canv.width / 2, canv.height * 0.75);
@@ -445,7 +447,7 @@ function update() {
                 ctx.arc(laserx, lasery, ship.radius * 0.25, 0, Math.PI * 2, false);
                 ctx.fill();
 
-                
+
 
                 // remove the laser
                 ship.lasers.splice(j, 1);
@@ -453,7 +455,7 @@ function update() {
                 // remove the asteroid
                 destroyAsteroid(i);
 
-                
+
 
                 break;
             }
