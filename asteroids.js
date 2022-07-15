@@ -105,10 +105,10 @@ function distanceBetweenPoints(x1, y1, x2, y2) {
     return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 
 }
-function drawShip(x,y,angle) {
-    console.log(x,y,ship.radius,angle)
+function drawShip(x,y,angle, color = 'white') {
+
     //draw 
-    ctx.strokeStyle = "white";
+    ctx.strokeStyle = color;
     ctx.lineWidth = SHIP_SIZE / 20;
     ctx.beginPath();
 
@@ -137,6 +137,10 @@ function drawShip(x,y,angle) {
 
 function explodeShip() {
     ship.explodeTime = Math.ceil(SHIP_EXPLODE_DURATION * FPS);
+}
+
+function gameOver() {
+    // TODO: game over
 }
 
 function keyDown(/** @type {KeyboardEvent} */ event) {
@@ -419,8 +423,10 @@ function update() {
     }
 
     // draw the lives 
+    var lifeColor;
     for (var i = 0; i < lives; i++) {
-        drawShip(SHIP_SIZE + i * SHIP_SIZE * 1.2, SHIP_SIZE,0.5* Math.PI );
+        lifeColor = exploding && i == lives - 1 ? "red" : "white";
+        drawShip(SHIP_SIZE + i * SHIP_SIZE * 1.2, SHIP_SIZE,0.5* Math.PI, lifeColor );
     }
     // dectect laser hits asteroid
 
@@ -497,8 +503,15 @@ function update() {
     } else {
         ship.explodeTime--;
 
+        // reset the ship after explosion
         if (ship.explodeTime == 0) {
-            ship = newShip()
+            lives--;
+            if (lives == 0) {
+                gameOver(); 
+            } else {
+                ship = newShip();
+            }
+            
         }
     }
 
