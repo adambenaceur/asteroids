@@ -17,6 +17,7 @@ const ASTEROID_SPEED = 50; // max starting speed of asteroids in pixels per seco
 const ASTEROID_VERTICES = 10; // average number of vertices on each asteroid
 const FPS = 30; // frames per second
 const FRICTION = 0.7; // friction coefficient of space (0 = no friction , 1 = max friction)
+const GAME_LIVES = 3; // number of lives
 const LASER_DISTANCE = 0.6 // max distance laser can travel as fraction of screen width
 const LASER_MAX = 10; // maximum number of lasers on screen at once
 const LASER_SPEED = 500; // speed of lazers in pixels per seconds
@@ -39,7 +40,7 @@ var canv = document.getElementById("gameCanvas")
 var ctx = canv.getContext("2d");
 
 // set up the game parameters
-var level, asteroids, ship, text, textAlpha;
+var level, lives, asteroids, ship, text, textAlpha;
 newGame();
 
 
@@ -103,6 +104,35 @@ function distanceBetweenPoints(x1, y1, x2, y2) {
     // when this = 0 , there is no distance
     return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 
+}
+function drawShip(x,y,angle) {
+    console.log(x,y,ship.radius,angle)
+    //draw 
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = SHIP_SIZE / 20;
+    ctx.beginPath();
+
+    // nose of the ship
+    ctx.moveTo(
+        x + 4 / 3 * ship.radius * Math.cos(angle),
+        y - 4 / 3 * ship.radius * Math.sin(angle)
+    );
+
+    // rear left of the ship
+    ctx.lineTo(
+        x - ship.radius * (Math.cos(angle) + Math.sin(angle)),
+        y + ship.radius * (Math.sin(angle) - Math.cos(angle))
+    );
+
+    // rear of the ship
+    ctx.lineTo(
+        x - ship.radius * (Math.cos(angle) - Math.sin(angle)),
+        y + ship.radius * (Math.sin(angle) + Math.cos(angle))
+    );
+
+    // completes triangle 
+    ctx.closePath()
+    ctx.stroke();
 }
 
 function explodeShip() {
@@ -186,6 +216,7 @@ function shootLaser() {
 function newGame() {
     level = 0;
     // set up spaceship
+    lives = GAME_LIVES;
     ship = newShip();
     newLevel();
 }
@@ -314,34 +345,8 @@ function update() {
     // draw ship
     if (!exploding) {
         if (blinkOn) {
-            //draw 
-            ctx.strokeStyle = "white";
-            ctx.lineWidth = SHIP_SIZE / 20;
-            ctx.beginPath();
-
-            // nose of the ship
-            ctx.moveTo(
-                ship.x + 4 / 3 * ship.radius * Math.cos(ship.a),
-                ship.y - 4 / 3 * ship.radius * Math.sin(ship.a)
-            );
-
-            // rear left of the ship
-            ctx.lineTo(
-                ship.x - ship.radius * (Math.cos(ship.a) + Math.sin(ship.a)),
-                ship.y + ship.radius * (Math.sin(ship.a) - Math.cos(ship.a))
-            );
-
-            // rear of the ship
-            ctx.lineTo(
-                ship.x - ship.radius * (Math.cos(ship.a) - Math.sin(ship.a)),
-                ship.y + ship.radius * (Math.sin(ship.a) + Math.cos(ship.a))
-            );
-
-            // completes triangle 
-            ctx.closePath()
-            ctx.stroke();
+            drawShip(ship.x,ship.y,ship.a);
         }
-
         // handle blinking
         if (ship.blinkNumber > 0) {
             // reduce the blink time
@@ -411,6 +416,11 @@ function update() {
         ctx.font = "small-caps " + TEXT_SIZE + "px dejavu sans mono";
         ctx.fillText(text, canv.width / 2, canv.height * 0.75);
         textAlpha -= (1.0 / TEXT_FADE_TIME / FPS);
+    }
+
+    // draw the lives 
+    for (var i = 0; i < lives; i++) {
+        drawShip(SHIP_SIZE + i * SHIP_SIZE * 1.2, SHIP_SIZE,0.5* Math.PI );
     }
     // dectect laser hits asteroid
 
