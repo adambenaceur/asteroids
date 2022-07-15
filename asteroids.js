@@ -431,11 +431,29 @@ function update() {
             // detect hits 
             if (distanceBetweenPoints(asteroidx, asteroidy, laserx, lasery) < asteroidradius) {
 
+                // draw the explosion
+                ctx.fillStyle = "orangered";
+                ctx.beginPath();
+                ctx.arc(laserx, lasery, ship.radius * 0.75, 0, Math.PI * 2, false);
+                ctx.fill();
+                ctx.fillStyle = "salmon";
+                ctx.beginPath();
+                ctx.arc(laserx, lasery, ship.radius * 0.5, 0, Math.PI * 2, false);
+                ctx.fill();
+                ctx.fillStyle = "pink";
+                ctx.beginPath();
+                ctx.arc(laserx, lasery, ship.radius * 0.25, 0, Math.PI * 2, false);
+                ctx.fill();
+
+                
+
                 // remove the laser
                 ship.lasers.splice(j, 1);
 
                 // remove the asteroid
                 destroyAsteroid(i);
+
+                
 
                 break;
             }
