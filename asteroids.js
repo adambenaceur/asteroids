@@ -140,7 +140,10 @@ function explodeShip() {
 }
 
 function gameOver() {
-    // TODO: game over
+    ship.dead = true;
+    text = "Game Over";
+    textAlpha = 1.0;
+
 }
 
 function keyDown(/** @type {KeyboardEvent} */ event) {
@@ -240,8 +243,9 @@ function newShip() {
         blinkNumber: Math.ceil(SHIP_INVINCIBILITY_DURATION / SHIP_BLINK_DURATION),
         blinkTime: Math.ceil(SHIP_BLINK_DURATION * FPS),
         canShoot: true,
-        lasers: [],
+        dead: false,
         explodeTime: 0,
+        lasers: [],
         rot: 0,
         thrusting: false,
         thrust: {
