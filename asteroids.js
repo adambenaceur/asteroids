@@ -34,12 +34,19 @@ const SHIP_THRUST = 5; // acceleration of the ship in pixels per second per seco
 const SHIP_TURN_SPD = 360; // turn speed in degrees per second
 const SHOW_BOUNDING = false; // show or hide collision bounding
 const SHOW_CENTRE_DOT = false; // show or hide ship's centre dot
+const SOUND_ON = false;
 const TEXT_FADE_TIME = 2.5; // text fade time in seconds
 const TEXT_SIZE = 40; // text font height in pixels
 
 /** @type {HTMLCanvasElement} */
 var canv = document.getElementById("gameCanvas");
 var ctx = canv.getContext("2d");
+
+// set up sound effects
+var fxExplode = new Sound("sounds/explode.m4a", 5, 0.3);
+var fxHit = new Sound("sounds/explode.m4a", 5, 0.5);
+var fxLaser = new Sound("sounds/laser.m4a", 1, 0.5);
+
 
 // set up the game parameters
 var level, lives, roids, score, scoreHigh, ship, text, textAlpha;
@@ -86,11 +93,14 @@ function destroyAsteroid(index) {
     // check high score
     if (score > scoreHigh) {
         scoreHigh = score;
-        localStorage.setItem(SAVE_KEY_SCORE,scoreHigh)
+        localStorage.setItem(SAVE_KEY_SCORE, scoreHigh)
     }
 
     // destroy the asteroid
     roids.splice(index, 1);
+
+    // play asteroid hit effect
+    fxHit.play()
 
     // new level when no more asteroids
     if (roids.length == 0) {
@@ -125,6 +135,9 @@ function drawShip(x, y, a, colour = "white") {
 
 function explodeShip() {
     ship.explodeTime = Math.ceil(SHIP_EXPLODE_DUR * FPS);
+
+    // play the explode sound effect
+    fxExplode.play ()
 }
 
 function gameOver() {
@@ -202,7 +215,7 @@ function newGame() {
     level = 0;
     lives = GAME_LIVES;
     score = 0;
-    
+
     ship = newShip();
 
     // get the high score from local storage
@@ -214,7 +227,7 @@ function newGame() {
     } else {
         scoreHigh = parseInt(scoreStr);
     }
-    
+
     newLevel();
 }
 
@@ -256,10 +269,30 @@ function shootLaser() {
             dist: 0,
             explodeTime: 0
         });
+
+        // play laser sound effect
+        fxLaser.play()
     }
 
     // prevent further shooting
     ship.canShoot = false;
+}
+
+function Sound(src, maxStreams = 1, vol = 1.0) {
+    this.streamNum = 0
+    this.streams = [];
+    for (var i = 0; i < maxStreams; i++) {
+        this.streams.push(new Audio(src));
+        this.streams[i].volume = vol;
+    }
+
+    this.play = function () {
+        if (SOUND_ON) {
+            this.streamNum = (this.streamNum + 1) % maxStreams;
+            this.streams[this.streamNum].play();
+        }
+        
+    }
 }
 
 function update() {
