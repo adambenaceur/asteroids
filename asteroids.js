@@ -17,6 +17,7 @@ const LASER_DIST = 0.6; // max distance laser can travel as fraction of screen w
 const LASER_EXPLODE_DUR = 0.1; // duration of the lasers' explosion in seconds
 const LASER_MAX = 10; // maximum number of lasers on screen at once
 const LASER_SPD = 500; // speed of lasers in pixels per second
+const MUSIC_ON = false;
 const ROID_JAG = 0.4; // jaggedness of the asteroids (0 = none, 1 = lots)
 const ROID_NUM = 3; // starting number of asteroids
 const ROID_PTS_LGE = 20; // points scored for large asteroids
@@ -48,7 +49,8 @@ var fxHit = new Sound("sounds/explode.m4a", 5, 0.3);
 var fxLaser = new Sound("sounds/laser.m4a", 5, 0.3);
 var fxThrust = new Sound("sounds/thrust.m4a", 1, 0.3)
 
-
+// set up the music 
+var music = new Music("sounds/music-low.m4a", "sounds/music-high.m4a");
 
 
 // set up the game parameters
@@ -280,6 +282,34 @@ function shootLaser() {
     // prevent further shooting
     ship.canShoot = false;
 }
+function Music(srcLow, srcHigh) {
+    this.soundLow = new Audio(srcLow);
+    this.soundHigh = new Audio(srcHigh);
+    this.low = true;
+    this.tempo = 1.0; // seconds per beat
+    this.beatTime = 0; // frames left until next beat
+
+    this.play = function() {
+        if (MUSIC_ON) {
+            if (this.low) {
+                this.soundLow.play();
+            } else {
+                this.soundHigh.play();
+            }
+            this.low = !this.low;
+            }
+        }
+
+
+    this.tick = function() {
+        if (this.beatTime == 0) {
+            this.play();
+            this.beatTime = Math.ceil(this.tempo * FPS);
+        } else {
+            this.beatTime--;
+        }
+    }
+}
 
 function Sound(src, maxStreams = 1, vol = 1.0) {
     this.streamNum = 0
@@ -307,6 +337,9 @@ function Sound(src, maxStreams = 1, vol = 1.0) {
 function update() {
     var blinkOn = ship.blinkNum % 2 == 0;
     var exploding = ship.explodeTime > 0;
+
+    // tick the music
+    music.tick();
 
     // draw space
     ctx.fillStyle = "black";
