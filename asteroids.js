@@ -25,6 +25,7 @@ const ROID_PTS_SML = 100; // points scored for small asteroids
 const ROID_SIZE = 100; // starting size of asteroids in pixels
 const ROID_SPD = 50; // max starting speed of asteroids in pixels per second
 const ROID_VERT = 10; // average number of vertices on each asteroid
+const SAVE_KEY_SCORE = "highscore"; // save key for local storage of high score
 const SHIP_BLINK_DUR = 0.1; // duration in seconds of a single blink during ship's invisibility
 const SHIP_EXPLODE_DUR = 0.3; // duration of the ship's explosion in seconds
 const SHIP_INV_DUR = 3; // duration of the ship's invisibility in seconds
@@ -85,6 +86,7 @@ function destroyAsteroid(index) {
     // check high score
     if (score > scoreHigh) {
         scoreHigh = score;
+        localStorage.setItem(SAVE_KEY_SCORE,scoreHigh)
     }
 
     // destroy the asteroid
@@ -200,8 +202,19 @@ function newGame() {
     level = 0;
     lives = GAME_LIVES;
     score = 0;
-    scoreHigh = 100;
+    
     ship = newShip();
+
+    // get the high score from local storage
+
+    var scoreStr = localStorage.getItem(SAVE_KEY_SCORE);
+
+    if (scoreStr == null) {
+        scoreHigh = 0;
+    } else {
+        scoreHigh = parseInt(scoreStr);
+    }
+    
     newLevel();
 }
 
@@ -444,7 +457,7 @@ function update() {
     ctx.textBaseline = "middle";
     ctx.fillStyle = "white";
     ctx.font = (TEXT_SIZE * 0.75) + "px dejavu sans mono";
-    ctx.fillText("Highscore: "+scoreHigh, canv.width / 2, SHIP_SIZE);
+    ctx.fillText("Highscore: " + scoreHigh, canv.width / 2, SHIP_SIZE);
 
 
     // detect laser hits on asteroids
