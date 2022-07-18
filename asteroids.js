@@ -246,7 +246,7 @@ function update() {
     // draw the asteroids
     var a, r, x, y, offs, vert;
     for (var i = 0; i < roids.length; i++) {
-        ctx.strokeStyle = "slategrey";
+        ctx.strokeStyle = "white";
         ctx.lineWidth = SHIP_SIZE / 20;
 
         // get the asteroid properties
