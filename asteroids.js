@@ -43,9 +43,12 @@ var canv = document.getElementById("gameCanvas");
 var ctx = canv.getContext("2d");
 
 // set up sound effects
-var fxExplode = new Sound("sounds/explode.m4a", 5, 0.3);
-var fxHit = new Sound("sounds/explode.m4a", 5, 0.5);
-var fxLaser = new Sound("sounds/laser.m4a", 1, 0.5);
+var fxExplode = new Sound("sounds/explode.m4a", 1, 0.3);
+var fxHit = new Sound("sounds/explode.m4a", 5, 0.3);
+var fxLaser = new Sound("sounds/laser.m4a", 5, 0.3);
+var fxThrust = new Sound("sounds/thrust.m4a", 1, 0.3)
+
+
 
 
 // set up the game parameters
@@ -137,7 +140,7 @@ function explodeShip() {
     ship.explodeTime = Math.ceil(SHIP_EXPLODE_DUR * FPS);
 
     // play the explode sound effect
-    fxExplode.play ()
+    fxExplode.play()
 }
 
 function gameOver() {
@@ -291,7 +294,13 @@ function Sound(src, maxStreams = 1, vol = 1.0) {
             this.streamNum = (this.streamNum + 1) % maxStreams;
             this.streams[this.streamNum].play();
         }
-        
+
+    }
+
+    this.stop = function () {
+        this.streams[this.streamNum].pause();
+        this.streams[this.streamNum].currentTime = 0;
+
     }
 }
 
@@ -348,6 +357,9 @@ function update() {
         ship.thrust.x += SHIP_THRUST * Math.cos(ship.a) / FPS;
         ship.thrust.y -= SHIP_THRUST * Math.sin(ship.a) / FPS;
 
+        // play thrusting sound
+        fxThrust.play();
+
         // draw the thruster
         if (!exploding && blinkOn) {
             ctx.fillStyle = "red";
@@ -374,6 +386,7 @@ function update() {
         // apply friction (slow the ship down when not thrusting)
         ship.thrust.x -= FRICTION * ship.thrust.x / FPS;
         ship.thrust.y -= FRICTION * ship.thrust.y / FPS;
+        fxThrust.stop();
     }
 
     // draw the triangular ship
