@@ -6,9 +6,9 @@
  
 <div align="center">
   
-  `→` Go to : https://asteriods.vercel.app/  
+  `1.` Go to : https://asteriods.vercel.app/  
   
-  `→` Play Asteroids!
+  `2.` Play Asteroids!
   
 </div>
 
