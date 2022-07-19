@@ -7,8 +7,7 @@
 // ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝╚═════╝ ╚══════╝     ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝
 
 
-
-
+// constants
 
 const FPS = 30; // frames per second
 const FRICTION = 0.7; // friction coefficient of space (0 = no friction, 1 = lots of friction)
@@ -17,7 +16,6 @@ const LASER_DIST = 0.6; // max distance laser can travel as fraction of screen w
 const LASER_EXPLODE_DUR = 0.1; // duration of the lasers' explosion in seconds
 const LASER_MAX = 10; // maximum number of lasers on screen at once
 const LASER_SPD = 500; // speed of lasers in pixels per second
-const MUSIC_ON = true;
 const ROID_JAG = 0.4; // jaggedness of the asteroids (0 = none, 1 = lots)
 const ROID_NUM = 3; // starting number of asteroids
 const ROID_PTS_LGE = 20; // points scored for large asteroids
@@ -35,13 +33,56 @@ const SHIP_THRUST = 5; // acceleration of the ship in pixels per second per seco
 const SHIP_TURN_SPD = 360; // turn speed in degrees per second
 const SHOW_BOUNDING = false; // show or hide collision bounding
 const SHOW_CENTRE_DOT = false; // show or hide ship's centre dot
-const SOUND_ON = true;
 const TEXT_FADE_TIME = 2.5; // text fade time in seconds
 const TEXT_SIZE = 40; // text font height in pixels
+
+
+// fx variables
+var MUSIC_ON = true;
+var SOUND_ON = true;
 
 /** @type {HTMLCanvasElement} */
 var canv = document.getElementById("gameCanvas");
 var ctx = canv.getContext("2d");
+
+// select image element
+const soundButton = document.getElementById('sound-on');
+const musicButton = document.getElementById('music-on');
+
+
+
+// listen for the click event and toggle sound & sound img on / off
+soundButton.addEventListener('click', function() {
+    
+    // toggle
+    SOUND_ON = !SOUND_ON;
+
+    console.log(SOUND_ON)
+    if (SOUND_ON) {
+        soundButton.src = "images/sound-on.jpg";
+
+    } else {
+        soundButton.src = "images/sound-off.jpg";
+    }
+
+});
+
+// listen for the click event and toggle music & music img on / off
+musicButton.addEventListener('click', function() {
+    
+    // toggle
+    MUSIC_ON = !MUSIC_ON;
+    
+    if (MUSIC_ON) {
+        musicButton.src = "images/music-on.jpg";
+        musicButton.style.width = "75px"
+    } else {
+        musicButton.src = "images/music-off.jpg"
+        musicButton.style.width = "100px"
+    }
+});
+
+
 
 // set up sound effects
 var fxExplode = new Sound("sounds/explode.m4a", 1, 0.3);
@@ -295,7 +336,7 @@ function Music(srcLow, srcHigh) {
     this.tempo = 1.0; // seconds per beat
     this.beatTime = 0; // frames left until next beat
 
-    this.play = function() {
+    this.play = function () {
         if (MUSIC_ON) {
             if (this.low) {
                 this.soundLow.play();
@@ -306,13 +347,13 @@ function Music(srcLow, srcHigh) {
         }
     }
 
-    this.setAsteroidRatio = function(ratio) {
+    this.setAsteroidRatio = function (ratio) {
         this.tempo = 1.0 - 0.75 * (1.0 - ratio);
         console.log(this.tempo)
     }
 
 
-    this.tick = function() {
+    this.tick = function () {
         if (this.beatTime == 0) {
             this.play();
             this.beatTime = Math.ceil(this.tempo * FPS);
