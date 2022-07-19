@@ -17,7 +17,7 @@ const LASER_DIST = 0.6; // max distance laser can travel as fraction of screen w
 const LASER_EXPLODE_DUR = 0.1; // duration of the lasers' explosion in seconds
 const LASER_MAX = 10; // maximum number of lasers on screen at once
 const LASER_SPD = 500; // speed of lasers in pixels per second
-const MUSIC_ON = false;
+const MUSIC_ON = true;
 const ROID_JAG = 0.4; // jaggedness of the asteroids (0 = none, 1 = lots)
 const ROID_NUM = 3; // starting number of asteroids
 const ROID_PTS_LGE = 20; // points scored for large asteroids
@@ -51,7 +51,7 @@ var fxThrust = new Sound("sounds/thrust.m4a", 1, 0.3)
 
 // set up the music 
 var music = new Music("sounds/music-low.m4a", "sounds/music-high.m4a");
-
+var roidsLeft, roidsTotal;
 
 // set up the game parameters
 var level, lives, roids, score, scoreHigh, ship, text, textAlpha;
@@ -66,6 +66,8 @@ setInterval(update, 1000 / FPS);
 
 function createAsteroidBelt() {
     roids = [];
+    roidsTotal = (ROID_NUM + level) * 7; // 7 (total asteroid from 1 asteroid (1 big => 2 medium => 4 small (7 total)))
+    roidsLeft = roidsTotal;
     var x, y;
     for (var i = 0; i < ROID_NUM + level; i++) {
         // random asteroid location (not touching spaceship)
@@ -106,6 +108,10 @@ function destroyAsteroid(index) {
 
     // play asteroid hit effect
     fxHit.play()
+
+    // calculate the ratio of remaning asteroids to determine music tempo
+    roidsLeft--;
+    music.setAsteroidRatio(roidsLeft == 0 ? 1 : roidsLeft / roidsTotal);
 
     // new level when no more asteroids
     if (roids.length == 0) {
@@ -297,8 +303,13 @@ function Music(srcLow, srcHigh) {
                 this.soundHigh.play();
             }
             this.low = !this.low;
-            }
         }
+    }
+
+    this.setAsteroidRatio = function(ratio) {
+        this.tempo = 1.0 - 0.75 * (1.0 - ratio);
+        console.log(this.tempo)
+    }
 
 
     this.tick = function() {
